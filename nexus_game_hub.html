@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXUS GAME HUB</title>
+<style>
+:root{--bg:#070914;--panel:#101426;--panel2:#151a31;--text:#f5f7ff;--muted:#9ca6c7;--accent:#7c5cff;--accent2:#00e5ff;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,#20205a 0,#070914 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#070914dd;backdrop-filter:blur(15px);border-bottom:1px solid #ffffff12;padding:16px 5vw;display:flex;align-items:center;gap:24px}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px}.logo span{color:var(--accent2)}
+.search{flex:1;max-width:600px;background:#ffffff0c;border:1px solid #ffffff16;border-radius:14px;padding:12px 16px;color:white;outline:none}.search:focus{border-color:var(--accent)}
+main{width:min(1400px,90vw);margin:auto}.hero{padding:55px 0 30px}.hero h1{font-size:clamp(38px,6vw,76px);line-height:.95;margin:0 0 18px}.hero p{color:var(--muted);font-size:18px;max-width:650px}.buttons{display:flex;gap:12px;margin-top:25px}.btn{border:0;border-radius:12px;padding:13px 20px;font-weight:800;cursor:pointer;background:var(--accent);color:white}.btn.alt{background:#ffffff10;border:1px solid #ffffff18}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;margin:28px 0 14px}.sectionhead h2{margin:0}.sectionhead small{color:var(--muted)}
+.categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}.cat{padding:18px;border-radius:17px;background:linear-gradient(135deg,#171b34,#0e1121);border:1px solid #ffffff10;cursor:pointer;transition:.2s}.cat:hover{transform:translateY(-3px);border-color:#7c5cff88}.cat b{display:block;margin-top:8px}.cat span{color:var(--muted);font-size:13px}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:15px;padding-bottom:60px}.card{background:var(--panel);border:1px solid #ffffff0e;border-radius:18px;overflow:hidden;cursor:pointer;transition:.2s}.card:hover{transform:translateY(-4px);border-color:#ffffff2a}.thumb{height:125px;display:grid;place-items:center;font-size:48px;background:linear-gradient(135deg,#252a58,#12162b)}.info{padding:13px}.info h3{font-size:16px;margin:0 0 5px}.tag{font-size:12px;color:var(--muted)}
+.overlay{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:10;padding:20px}.modal{width:min(620px,95vw);background:#11162a;border:1px solid #ffffff1c;border-radius:24px;padding:25px;box-shadow:0 30px 100px #000}.modal h2{margin-top:0}.close{float:right;background:#ffffff12;border:0;color:white;border-radius:10px;padding:8px 12px;cursor:pointer}
+.gamebox{height:300px;border-radius:18px;background:#080b17;position:relative;overflow:hidden;margin:15px 0}.target{position:absolute;width:58px;height:58px;border:0;border-radius:50%;background:linear-gradient(135deg,#ffd166,#ff4f9a);cursor:pointer;display:none;box-shadow:0 0 25px #ff4f9a}.score{font-size:20px;font-weight:800}
+footer{text-align:center;color:#6f7897;padding:25px;border-top:1px solid #ffffff0d}
+@media(max-width:650px){header{gap:10px}.logo{font-size:18px}.hero{padding-top:35px}.games{grid-template-columns:repeat(2,1fr)}.thumb{height:105px}}
+</style>
+</head>
+<body>
+<header><div class="logo">NEXUS<span>GAME HUB</span></div><input id="search" class="search" placeholder="🔎 Search 2,000+ games..."></header>
+<main>
+<section class="hero">
+<h1>PLAY. COMPETE.<br><span style="color:var(--accent2)">REPEAT.</span></h1>
+<p>Your personal gaming universe. Discover arcade, racing, sports, puzzle, action, strategy and adventure games—all in one place.</p>
+<div class="buttons"><button class="btn" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">🎮 Browse Games</button><button class="btn alt" onclick="showFeatured()">🔥 Featured</button></div>
+</section>
+<div class="sectionhead"><h2>Categories</h2><small>200 games planned per category</small></div>
+<section class="categories" id="cats"></section>
+<div class="sectionhead"><h2 id="gameTitle">Featured Games</h2><small id="count"></small></div>
+<section class="games" id="games"></section>
+</main>
+<footer>© 2026 Nexus Game Hub • Built for gamers</footer>
+
+<div class="overlay" id="overlay"><div class="modal"><button class="close" onclick="closeGame()">✕</button><h2 id="modalTitle">Tap Rush</h2><p id="modalDesc"></p><div class="score">Score: <span id="score">0</span> · Time: <span id="time">20</span></div><div class="gamebox" id="gamebox"><button class="target" id="target"></button></div><button class="btn" id="startGame">Start Game</button></div></div>
+
+<script>
+const categories=[
+["🏎️","Racing"],["🏀","Sports"],["🎯","Action"],["🧩","Puzzle"],["🗺️","Adventure"],["🧠","Strategy"],["👾","Arcade"],["🃏","Cards & Board"],["🕹️","Retro"],["👨‍👩‍👧","Family"]
+];
+const games=[
+["⚡","Tap Rush","Arcade"],["🏀","Hoop Master","Sports"],["🏎️","Neon Racer","Racing"],["🧩","Block Blast","Puzzle"],["🧠","Brain Grid","Strategy"],["🎯","Target Storm","Action"],["🗺️","Mystery Island","Adventure"],["👾","Pixel Invaders","Retro"],["🃏","Card Clash","Cards & Board"],["🚀","Space Dash","Arcade"],["⚽","Goal Hero","Sports"],["🏁","Drift Kings","Racing"],["🔢","Number Ninja","Puzzle"],["🛡️","Castle Guard","Strategy"],["🤖","Robot Arena","Action"],["🧙","Magic Quest","Adventure"],["👻","Ghost Runner","Retro"],["♟️","Battle Chess","Cards & Board"],["🔥","Fire Jump","Arcade"],["🏈","Quarterback Pro","Sports"],["🚗","Turbo Streets","Racing"],["🔷","Gem Match","Puzzle"],["🌍","Empire Builder","Strategy"],["🥷","Shadow Strike","Action"]
+];
+const cats=document.getElementById("cats"), grid=document.getElementById("games"), search=document.getElementById("search"), count=document.getElementById("count"), title=document.getElementById("gameTitle");
+categories.forEach(c=>{const d=document.createElement("div");d.className="cat";d.innerHTML=`<span>${c[0]}</span><b>${c[1]}</b><span>200 games</span>`;d.onclick=()=>filter(c[1]);cats.appendChild(d)});
+function render(list=games){grid.innerHTML="";list.forEach(g=>{const d=document.createElement("article");d.className="card";d.innerHTML=`<div class="thumb">${g[0]}</div><div class="info"><h3>${g[1]}</h3><div class="tag">${g[2]} · ▶ Play</div></div>`;d.onclick=()=>openGame(g);grid.appendChild(d)});count.textContent=`Showing ${list.length} games`;}
+function filter(cat){title.textContent=cat;render(games.filter(g=>g[2]===cat))}
+search.oninput=()=>{const q=search.value.toLowerCase();title.textContent=q?"Search Results":"Featured Games";render(games.filter(g=>g[1].toLowerCase().includes(q)||g[2].toLowerCase().includes(q)))};
+function showFeatured(){search.value="";title.textContent="🔥 Featured Games";render(games.slice(0,12));document.getElementById("games").scrollIntoView({behavior:"smooth"})}
+
+let timer,score=0,time=20;
+function openGame(g){document.getElementById("overlay").style.display="grid";document.getElementById("modalTitle").textContent=g[1];document.getElementById("modalDesc").textContent=g[1]+" is ready to play!";score=0;time=20;document.getElementById("score").textContent=0;document.getElementById("time").textContent=20;document.getElementById("target").style.display="none"}
+function closeGame(){clearInterval(timer);document.getElementById("overlay").style.display="none"}
+function move(){const b=document.getElementById("gamebox"),t=document.getElementById("target");t.style.left=Math.random()*(b.clientWidth-70)+"px";t.style.top=Math.random()*(b.clientHeight-70)+"px"}
+document.getElementById("startGame").onclick=()=>{clearInterval(timer);score=0;time=20;document.getElementById("score").textContent=0;document.getElementById("time").textContent=20;document.getElementById("target").style.display="block";move();timer=setInterval(()=>{time--;document.getElementById("time").textContent=time;if(time<=0){clearInterval(timer);document.getElementById("target").style.display="none";alert("Game over! Score: "+score)}},1000)}
+document.getElementById("target").onclick=()=>{score++;document.getElementById("score").textContent=score;move()}
+render();
+</script>
+</body>
+</html>
